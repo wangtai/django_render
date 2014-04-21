@@ -14,7 +14,7 @@ import functools
 import json
 
 from django.conf.urls import url as django_url, patterns
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 
 from django_render import global_read_user_interceptor, global_access_secret_key, global_login_page
 
@@ -31,7 +31,10 @@ class RequestMethod:
     GET = 'GET'
     POST = 'POST'
     PUT = 'PUT'
+    HEAD = 'HEAD'
+    TRACE = 'TRACE'
     DELETE = 'DELETE'
+    OPTIONS = 'OPTIONS'
 
 
 def login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=None, login_page=None):
@@ -209,6 +212,49 @@ def url(url_pattern, *args, **kwargs):
             module.urlpatterns = patterns('', )
 
         module.urlpatterns += patterns('', django_url(url_pattern, decorated, *args, **kwargs), )
+        return decorated
+
+    return paramed_decorator
+
+
+url_mapping = {}
+
+
+def url_dispatch(request, *args, **kwargs):
+    # expect_method = kwargs.pop('expect_method', None)
+    logging.debug(url_mapping)
+    url_pattern = kwargs.pop('url_pattern', None)
+    method_mapping = url_mapping.get(url_pattern, None)
+    if method_mapping is None:
+        raise Http404
+    view = method_mapping.get(request.method, None)
+    logging.debug(view)
+    if view is not None:
+        return view(request, *args, **kwargs)
+    else:
+        return HttpResponse(status=403, content="Request Forbidden 403")
+
+
+def url2(url_pattern, method=RequestMethod.GET, *p_args, **p_kwargs):
+    def paramed_decorator(func):
+        @functools.wraps(func)
+        def decorated(self, *args, **kwargs):
+            return func(self, *args, **kwargs)
+
+        url_key = func.__module__ + url_pattern
+        mapping = url_mapping.get(url_pattern, None)
+        if mapping is None:
+            mapping = {}
+            url_mapping.update({url_key: mapping})
+        mapping.update({method: decorated})
+
+        module = sys.modules[func.__module__]
+        if not hasattr(module, 'urlpatterns'):
+            module.urlpatterns = patterns('', )
+
+        module.urlpatterns += patterns('', django_url(url_pattern, url_dispatch,
+                                                      {'url_pattern': url_key}, *p_args,
+                                                      **p_kwargs), )
         return decorated
 
     return paramed_decorator

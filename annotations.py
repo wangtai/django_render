@@ -242,11 +242,10 @@ def url2(url_pattern, method=RequestMethod.GET, *p_args, **p_kwargs):
             return func(self, *args, **kwargs)
 
         url_key = func.__module__ + url_pattern
-        mapping = url_mapping.get(url_pattern, None)
+        mapping = url_mapping.get(url_key, None)
         if mapping is None:
-            mapping = {}
-            url_mapping.update({url_key: mapping})
-        mapping.update({method: decorated})
+            url_mapping.update({url_key: {}})
+        url_mapping[url_key].update({method: decorated})
 
         module = sys.modules[func.__module__]
         if not hasattr(module, 'urlpatterns'):

@@ -201,22 +201,6 @@ def param(*p_args, **p_kwargs):
     return _param('param', *p_args, **p_kwargs)
 
 
-def url(url_pattern, *args, **kwargs):
-    def paramed_decorator(func):
-        @functools.wraps(func)
-        def decorated(self, *args, **kwargs):
-            return func(self, *args, **kwargs)
-
-        module = sys.modules[func.__module__]
-        if not hasattr(module, 'urlpatterns'):
-            module.urlpatterns = patterns('', )
-
-        module.urlpatterns += patterns('', django_url(url_pattern, decorated, *args, **kwargs), )
-        return decorated
-
-    return paramed_decorator
-
-
 url_mapping = {}
 
 
@@ -239,7 +223,7 @@ def url_dispatch(request, *args, **kwargs):
         return HttpResponse(status=403, content="Request Forbidden 403")
 
 
-def url2(url_pattern, method=RequestMethod.GET, is_json=False, *p_args, **p_kwargs):
+def url(url_pattern, method=RequestMethod.GET, is_json=False, *p_args, **p_kwargs):
     def paramed_decorator(func):
         @functools.wraps(func)
         def decorated(self, *args, **kwargs):
@@ -255,9 +239,10 @@ def url2(url_pattern, method=RequestMethod.GET, is_json=False, *p_args, **p_kwar
         if not hasattr(module, 'urlpatterns'):
             module.urlpatterns = patterns('', )
 
-        module.urlpatterns += patterns('', django_url(url_pattern, url_dispatch,
-                                                      {'url_pattern': url_key, 'is_json': is_json}, *p_args,
-                                                      **p_kwargs), )
+        module.urlpatterns += \
+            patterns('', django_url(url_pattern, url_dispatch,
+                                    {'url_pattern': url_key, 'is_json': is_json}, *p_args,
+                                    **p_kwargs), )
         return decorated
 
     return paramed_decorator

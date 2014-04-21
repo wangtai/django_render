@@ -224,18 +224,22 @@ def url_dispatch(request, *args, **kwargs):
     # expect_method = kwargs.pop('expect_method', None)
     logging.debug(url_mapping)
     url_pattern = kwargs.pop('url_pattern', None)
+    is_json = kwargs.pop('is_json', False)
     method_mapping = url_mapping.get(url_pattern, None)
     if method_mapping is None:
         raise Http404
     view = method_mapping.get(request.method, None)
     logging.debug(view)
     if view is not None:
-        return view(request, *args, **kwargs)
+        rt = view(request, *args, **kwargs)
+        if is_json:
+            return json_result(rt)
+        return rt
     else:
         return HttpResponse(status=403, content="Request Forbidden 403")
 
 
-def url2(url_pattern, method=RequestMethod.GET, *p_args, **p_kwargs):
+def url2(url_pattern, method=RequestMethod.GET, is_json=False, *p_args, **p_kwargs):
     def paramed_decorator(func):
         @functools.wraps(func)
         def decorated(self, *args, **kwargs):
@@ -252,64 +256,36 @@ def url2(url_pattern, method=RequestMethod.GET, *p_args, **p_kwargs):
             module.urlpatterns = patterns('', )
 
         module.urlpatterns += patterns('', django_url(url_pattern, url_dispatch,
-                                                      {'url_pattern': url_key}, *p_args,
+                                                      {'url_pattern': url_key, 'is_json': is_json}, *p_args,
                                                       **p_kwargs), )
         return decorated
 
     return paramed_decorator
 
 
-def req_method(expect_method=RequestMethod.GET, *p_args, **p_kwargs):
-    p_kwargs.update({'expect_method': expect_method})
+def json_result(rt):
+    response = HttpResponse(content_type='application/json')
+    if type(rt) == tuple:
+        status = rt[0]
+        if status:  # return True, {}
+            rt_obj = {'rt': status}
+            rt_obj.update(rt[1])
+            response.content = json.dumps(rt_obj)
+            return response
+        else:  # return False, 'message'
+            response.content = json.dumps({'rt': status, 'message': rt[1]})
+            return response
+    elif type(rt) is bool:  # return True / return False
+        response.content = json.dumps({'rt': rt, 'message': ''})
+        return response
+    elif type(rt) is dict:  # return {}
+        response.content = rt
+        return response
+    elif rt is None:  # direct return
+        response.content = json.dumps({})
+        return response
+    else:
+        response.content = json.dumps({'message': str(rt)})
+        return response
 
-    def paramed_decorator(func):
-        @functools.wraps(func)
-        def decorated(*args, **kwargs):
-            expect_method = p_kwargs['expect_method']
-            request = args[0]
-            method = request.META['REQUEST_METHOD']
-            if method != expect_method:
-                if method == RequestMethod.POST:
-                    if 'request_method' in request.GET:
-                        expect_method = request.GET['request_method']
-            if method != expect_method:
-                return HttpResponse(status=403, content="Request Forbidden 403")
-            return func(*args, **kwargs)
 
-        return decorated
-
-    return paramed_decorator
-
-
-def is_json():
-    def paramed_decorator(func):
-        @functools.wraps(func)
-        def decorated(*args, **kwargs):
-            response = HttpResponse(content_type='application/json')
-            rt = func(*args, **kwargs)
-            if type(rt) == tuple:
-                status = rt[0]
-                if status:  # return True, {}
-                    rt_obj = {'rt': status}
-                    rt_obj.update(rt[1])
-                    response.content = json.dumps(rt_obj)
-                    return response
-                else:  # return False, 'message'
-                    response.content = json.dumps({'rt': status, 'message': rt[1]})
-                    return response
-            elif type(rt) is bool:  # return True / return False
-                response.content = json.dumps({'rt': rt, 'message': ''})
-                return response
-            elif type(rt) is dict:  # return {}
-                response.content = rt
-                return response
-            elif rt is None:  # direct return
-                response.content = json.dumps({})
-                return response
-            else:
-                response.content = json.dumps({'message': str(rt)})
-                return response
-
-        return decorated
-
-    return paramed_decorator

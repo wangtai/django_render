@@ -5,6 +5,7 @@
 """
 url注解
 """
+import logging
 
 __revision__ = '0.1'
 
@@ -19,8 +20,11 @@ from django_render import global_read_user_interceptor, global_access_secret_key
 
 
 class Type:
-    str_list = 'str_list'
-    int_list = 'int_list'
+    class str_list:
+        pass
+
+    class int_list:
+        pass
 
 
 class RequestMethod:
@@ -93,7 +97,8 @@ def _param(method_name, *p_args, **p_kwargs):
                 _type = None
                 _default = None
 
-                if type(v) == str and v not in (Type.str_list, Type.int_list):
+                logging.debug(v)
+                if type(v) == str:
                     _type = str
                     _name = v
                 elif type(v) == dict:
@@ -112,10 +117,12 @@ def _param(method_name, *p_args, **p_kwargs):
                     _default = v[1]
                 elif type(v) == type:
                     _type = v
+                elif v in (Type.str_list, Type.int_list):
+                    _type = v
 
-                if _name == None:
+                if _name is None:
                     _name = k
-                if _type == None:
+                if _type is None:
                     _type = str
 
                 has_key = True

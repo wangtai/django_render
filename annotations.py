@@ -266,6 +266,9 @@ def json_result(rt):
     elif type(rt) is dict:  # return {}
         response.content = rt
         return response
+    elif type(rt) is HttpResponse:  # return {}
+        response = rt
+        return response
     elif rt is None:  # direct return
         response.content = json.dumps({})
         return response

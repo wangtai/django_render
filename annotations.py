@@ -26,8 +26,14 @@ class Type:
     class int_list:
         pass
 
+    class json:
+        pass
+
 
 class RequestMethod:
+    def __init__(self):
+        pass
+
     GET = 'GET'
     POST = 'POST'
     PUT = 'PUT'
@@ -79,7 +85,7 @@ def login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=
 
 
 def _param(method_name, *p_args, **p_kwargs):
-    '''
+    """
     @get('param1', 'param2')
     @get(param1={'name':'parameter_name', 'type':int, 'default':0})
     @get(param1={'type':int, 'default':0})
@@ -87,7 +93,7 @@ def _param(method_name, *p_args, **p_kwargs):
     @get(param1=('param_name', int, 0))
     @get(param1=(int, 0))
     @get(param1=int)
-    '''
+    """
 
     def paramed_decorator(func):
         @functools.wraps(func)
@@ -105,11 +111,11 @@ def _param(method_name, *p_args, **p_kwargs):
                     _type = str
                     _name = v
                 elif type(v) == dict:
-                    if v.has_key('name'):
+                    if 'name' in v:
                         _name = v['name']
-                    if v.has_key('type'):
+                    if 'type' in v:
                         _type = v['type']
-                    if v.has_key('default'):
+                    if 'default' in v:
                         _default = v['default']
                 elif type(v) == tuple and len(v) == 3:
                     _name = v[0]
@@ -133,7 +139,7 @@ def _param(method_name, *p_args, **p_kwargs):
                     origin_v = method[_name].encode('utf-8').strip()
                     if len(origin_v) == 0:
                         has_key = False
-                except:
+                except KeyError:
                     has_key = False
 
                 if has_key:
@@ -162,7 +168,7 @@ def _param(method_name, *p_args, **p_kwargs):
             for k in p_args:
                 try:
                     kwargs.update({k: method[k].encode('utf-8')})
-                except:
+                except KeyError:
                     return HttpResponse(json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + k}))
             return func(*args, **kwargs)
 
@@ -172,7 +178,7 @@ def _param(method_name, *p_args, **p_kwargs):
 
 
 def get(*p_args, **p_kwargs):
-    '''
+    """
     @get('param1', 'param2')
     @get(param1={'name':'parameter_name', 'type':int, 'default':0})
     @get(param1={'type':int, 'default':0})
@@ -180,12 +186,12 @@ def get(*p_args, **p_kwargs):
     @get(param1=('param_name', int, 0))
     @get(param1=(int, 0))
     @get(param1=int)
-    '''
+    """
     return _param('get', *p_args, **p_kwargs)
 
 
 def post(*p_args, **p_kwargs):
-    '''
+    """
     @post('param1', 'param2')
     @post(param1={'name':'parameter_name', 'type':int, 'default':0})
     @post(param1={'type':int, 'default':0})
@@ -193,7 +199,7 @@ def post(*p_args, **p_kwargs):
     @post(param1=('param_name', int, 0))
     @post(param1=(int, 0))
     @post(param1=int)
-    '''
+    """
     return _param('post', *p_args, **p_kwargs)
 
 

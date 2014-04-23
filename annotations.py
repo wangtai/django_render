@@ -126,7 +126,7 @@ def _param(method_name, *p_args, **p_kwargs):
                     _default = v[1]
                 elif type(v) == type:
                     _type = v
-                elif v in (Type.str_list, Type.int_list):
+                elif v in (Type.str_list, Type.int_list, Type.json):
                     _type = v
 
                 if _name is None:
@@ -155,6 +155,8 @@ def _param(method_name, *p_args, **p_kwargs):
                         value = [item for item in origin_v.split(',') if len(item) > 0]
                     elif _type == Type.int_list:
                         value = [int(item) for item in origin_v.split(',')]
+                    elif _type == Type.json:
+                        value = json.loads(origin_v)
                     else:
                         value = _type(origin_v)
                 else:

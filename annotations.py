@@ -164,14 +164,16 @@ def _param(method_name, *p_args, **p_kwargs):
                         value = _default
                     else:
                         return HttpResponse(
-                            json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + _name + ";"}))
+                            json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + _name + ";"}),
+                            content_type='application/json')
                 kwargs.update({k: value})
 
             for k in p_args:
                 try:
                     kwargs.update({k: method[k].encode('utf-8')})
                 except KeyError:
-                    return HttpResponse(json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + k}))
+                    return HttpResponse(json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + k}),
+                                        content_type='application/json')
             return func(*args, **kwargs)
 
         return decorated

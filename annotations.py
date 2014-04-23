@@ -156,7 +156,12 @@ def _param(method_name, *p_args, **p_kwargs):
                     elif _type == Type.int_list:
                         value = [int(item) for item in origin_v.split(',')]
                     elif _type == Type.json:
-                        value = json.loads(origin_v)
+                        try:
+                            value = json.loads(origin_v)
+                        except ValueError:
+                            return HttpResponse(
+                                json.dumps({'rt': False, 'info': "No JSON object could be decoded"}),
+                                content_type='application/json')
                     else:
                         value = _type(origin_v)
                 else:

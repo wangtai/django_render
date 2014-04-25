@@ -43,6 +43,9 @@ class RequestMethod:
     OPTIONS = 'OPTIONS'
 
 
+M = RequestMethod
+
+
 def login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=None, login_page=None):
     def paramed_decorator(func):
         @functools.wraps(func)

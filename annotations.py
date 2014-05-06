@@ -5,7 +5,6 @@
 """
 url注解
 """
-import logging
 
 __revision__ = '0.1'
 
@@ -109,7 +108,7 @@ def _param(method_name, *p_args, **p_kwargs):
                 _type = None
                 _default = None
 
-                logging.debug(v)
+                # logging.debug(v)
                 if type(v) == str:
                     _type = str
                     _name = v
@@ -224,14 +223,14 @@ url_mapping = {}
 
 def url_dispatch(request, *args, **kwargs):
     # expect_method = kwargs.pop('expect_method', None)
-    logging.debug(url_mapping)
+    # logging.debug(url_mapping)
     url_pattern = kwargs.pop('url_pattern', None)
     is_json = kwargs.pop('is_json', False)
     method_mapping = url_mapping.get(url_pattern, None)
     if method_mapping is None:
         raise Http404
     view = method_mapping.get(request.method, None)
-    logging.debug(view)
+    # logging.debug(view)
     if view is not None:
         rt = view(request, *args, **kwargs)
         if is_json:

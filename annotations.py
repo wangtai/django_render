@@ -5,7 +5,6 @@
 """
 url注解
 """
-import logging
 
 __revision__ = '0.1'
 
@@ -26,8 +25,14 @@ class Type:
     class int_list:
         pass
 
+    class json:
+        pass
+
 
 class RequestMethod:
+    def __init__(self):
+        pass
+
     GET = 'GET'
     POST = 'POST'
     PUT = 'PUT'
@@ -35,6 +40,9 @@ class RequestMethod:
     TRACE = 'TRACE'
     DELETE = 'DELETE'
     OPTIONS = 'OPTIONS'
+
+
+M = RequestMethod
 
 
 def login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=None, login_page=None):
@@ -79,7 +87,7 @@ def login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=
 
 
 def _param(method_name, *p_args, **p_kwargs):
-    '''
+    """
     @get('param1', 'param2')
     @get(param1={'name':'parameter_name', 'type':int, 'default':0})
     @get(param1={'type':int, 'default':0})
@@ -87,7 +95,7 @@ def _param(method_name, *p_args, **p_kwargs):
     @get(param1=('param_name', int, 0))
     @get(param1=(int, 0))
     @get(param1=int)
-    '''
+    """
 
     def paramed_decorator(func):
         @functools.wraps(func)
@@ -100,16 +108,16 @@ def _param(method_name, *p_args, **p_kwargs):
                 _type = None
                 _default = None
 
-                logging.debug(v)
+                # logging.debug(v)
                 if type(v) == str:
                     _type = str
                     _name = v
                 elif type(v) == dict:
-                    if v.has_key('name'):
+                    if 'name' in v:
                         _name = v['name']
-                    if v.has_key('type'):
+                    if 'type' in v:
                         _type = v['type']
-                    if v.has_key('default'):
+                    if 'default' in v:
                         _default = v['default']
                 elif type(v) == tuple and len(v) == 3:
                     _name = v[0]
@@ -120,7 +128,7 @@ def _param(method_name, *p_args, **p_kwargs):
                     _default = v[1]
                 elif type(v) == type:
                     _type = v
-                elif v in (Type.str_list, Type.int_list):
+                elif v in (Type.str_list, Type.int_list, Type.json):
                     _type = v
 
                 if _name is None:
@@ -133,7 +141,7 @@ def _param(method_name, *p_args, **p_kwargs):
                     origin_v = method[_name].encode('utf-8').strip()
                     if len(origin_v) == 0:
                         has_key = False
-                except:
+                except KeyError:
                     has_key = False
 
                 if has_key:
@@ -149,6 +157,13 @@ def _param(method_name, *p_args, **p_kwargs):
                         value = [item for item in origin_v.split(',') if len(item) > 0]
                     elif _type == Type.int_list:
                         value = [int(item) for item in origin_v.split(',')]
+                    elif _type == Type.json:
+                        try:
+                            value = json.loads(origin_v)
+                        except ValueError:
+                            return HttpResponse(
+                                json.dumps({'rt': False, 'info': "No JSON object could be decoded"}),
+                                content_type='application/json')
                     else:
                         value = _type(origin_v)
                 else:
@@ -156,14 +171,16 @@ def _param(method_name, *p_args, **p_kwargs):
                         value = _default
                     else:
                         return HttpResponse(
-                            json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + _name + ";"}))
+                            json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + _name + ";"}),
+                            content_type='application/json')
                 kwargs.update({k: value})
 
             for k in p_args:
                 try:
                     kwargs.update({k: method[k].encode('utf-8')})
-                except:
-                    return HttpResponse(json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + k}))
+                except KeyError:
+                    return HttpResponse(json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + k}),
+                                        content_type='application/json')
             return func(*args, **kwargs)
 
         return decorated
@@ -172,7 +189,7 @@ def _param(method_name, *p_args, **p_kwargs):
 
 
 def get(*p_args, **p_kwargs):
-    '''
+    """
     @get('param1', 'param2')
     @get(param1={'name':'parameter_name', 'type':int, 'default':0})
     @get(param1={'type':int, 'default':0})
@@ -180,12 +197,12 @@ def get(*p_args, **p_kwargs):
     @get(param1=('param_name', int, 0))
     @get(param1=(int, 0))
     @get(param1=int)
-    '''
+    """
     return _param('get', *p_args, **p_kwargs)
 
 
 def post(*p_args, **p_kwargs):
-    '''
+    """
     @post('param1', 'param2')
     @post(param1={'name':'parameter_name', 'type':int, 'default':0})
     @post(param1={'type':int, 'default':0})
@@ -193,7 +210,7 @@ def post(*p_args, **p_kwargs):
     @post(param1=('param_name', int, 0))
     @post(param1=(int, 0))
     @post(param1=int)
-    '''
+    """
     return _param('post', *p_args, **p_kwargs)
 
 
@@ -206,14 +223,14 @@ url_mapping = {}
 
 def url_dispatch(request, *args, **kwargs):
     # expect_method = kwargs.pop('expect_method', None)
-    logging.debug(url_mapping)
+    # logging.debug(url_mapping)
     url_pattern = kwargs.pop('url_pattern', None)
     is_json = kwargs.pop('is_json', False)
     method_mapping = url_mapping.get(url_pattern, None)
     if method_mapping is None:
         raise Http404
     view = method_mapping.get(request.method, None)
-    logging.debug(view)
+    # logging.debug(view)
     if view is not None:
         rt = view(request, *args, **kwargs)
         if is_json:
@@ -265,6 +282,9 @@ def json_result(rt):
         return response
     elif type(rt) is dict:  # return {}
         response.content = rt
+        return response
+    elif type(rt) is HttpResponse:  # return {}
+        response = rt
         return response
     elif rt is None:  # direct return
         response.content = json.dumps({})

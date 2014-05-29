@@ -3,7 +3,7 @@
 # Last modified: Wang Tai (i@wangtai.me)
 
 """
-url注解
+方法定义
 """
 
 __revision__ = '0.1'

@@ -5,6 +5,7 @@
 """
 方法定义
 """
+import logging
 
 __revision__ = '0.1'
 
@@ -233,6 +234,9 @@ def url_dispatch(request, *args, **kwargs):
     # logging.debug(view)
     if view is not None:
         rt = view(request, *args, **kwargs)
+        logging.debug(type(rt))
+        is_json = is_json or type(rt) is not HttpResponse
+        logging.debug(is_json)
         if is_json:
             return json_result(rt)
         return rt
@@ -281,7 +285,7 @@ def json_result(rt):
         response.content = json.dumps({'rt': rt, 'message': ''})
         return response
     elif type(rt) is dict:  # return {}
-        response.content = rt
+        response.content = json.dumps(rt)
         return response
     elif type(rt) is HttpResponse:  # return {}
         response = rt

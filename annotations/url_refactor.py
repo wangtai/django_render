@@ -244,7 +244,7 @@ def url_dispatch(request, *args, **kwargs):
         return HttpResponse(status=403, content="Request Forbidden 403")
 
 
-def url(url_pattern, method=RequestMethod.GET, is_json=False, *p_args, **p_kwargs):
+def url(url_pattern, method=[M.POST, M.GET], is_json=False, *p_args, **p_kwargs):
     def paramed_decorator(func):
         @functools.wraps(func)
         def decorated(self, *args, **kwargs):
@@ -254,7 +254,12 @@ def url(url_pattern, method=RequestMethod.GET, is_json=False, *p_args, **p_kwarg
         mapping = url_mapping.get(url_key, None)
         if mapping is None:
             url_mapping.update({url_key: {}})
-        url_mapping[url_key].update({method: decorated})
+
+        if type(method) in (list, tuple, set):
+            for m in method:
+                url_mapping[url_key].update({m: decorated})
+        else:
+            url_mapping[url_key].update({method: decorated})
 
         module = sys.modules[func.__module__]
         if not hasattr(module, 'urlpatterns'):

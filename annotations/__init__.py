@@ -9,4 +9,4 @@ url注解
 __revision__ = '0.1'
 
 from url_refactor import Type, RequestMethod, M
-from url_refactor import login_required, get, post, url
+from url_refactor import login_required, get, post, url, param

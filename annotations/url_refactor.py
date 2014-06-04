@@ -235,7 +235,7 @@ def url_dispatch(request, *args, **kwargs):
     if view is not None:
         rt = view(request, *args, **kwargs)
         logging.debug(type(rt))
-        is_json = is_json or type(rt) is not HttpResponse
+        is_json = is_json or not issubclass(type(rt), HttpResponse)
         logging.debug(is_json)
         if is_json:
             return json_result(rt)

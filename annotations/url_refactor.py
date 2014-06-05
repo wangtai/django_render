@@ -292,6 +292,9 @@ def json_result(rt):
     elif type(rt) is dict:  # return {}
         response.content = json.dumps(rt)
         return response
+    elif type(rt) is list:  # return []
+        response.content = json.dumps(rt)
+        return response
     elif type(rt) is HttpResponse:  # return {}
         response = rt
         return response

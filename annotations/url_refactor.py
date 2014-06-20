@@ -63,7 +63,8 @@ def login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=
             if user is None:
                 return response
             else:
-                kwargs.update({'user': user})
+                if 'user' in func.func_code.co_varnames:
+                    kwargs.update({'user': user})
             return func(*args, **kwargs)
 
         return decorated

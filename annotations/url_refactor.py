@@ -19,7 +19,7 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django_render import global_read_user_interceptor, global_access_secret_key, global_login_page
 
 
-class Type:
+class _Type:
     class str_list:
         pass
 
@@ -30,7 +30,7 @@ class Type:
         pass
 
 
-class RequestMethod:
+class _RequestMethod:
     def __init__(self):
         pass
 
@@ -43,10 +43,10 @@ class RequestMethod:
     OPTIONS = 'OPTIONS'
 
 
-M = RequestMethod
+_M = _RequestMethod
 
 
-def login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=None, login_page=None):
+def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=None, login_page=None):
     def paramed_decorator(func):
         @functools.wraps(func)
         def decorated(*args, **kwargs):
@@ -88,7 +88,7 @@ def login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=
     return paramed_decorator
 
 
-def _param(method_name, *p_args, **p_kwargs):
+def __param(method_name, *p_args, **p_kwargs):
     """
     @get('param1', 'param2')
     @get(param1={'name':'parameter_name', 'type':int, 'default':0})
@@ -130,7 +130,7 @@ def _param(method_name, *p_args, **p_kwargs):
                     _default = v[1]
                 elif type(v) == type:
                     _type = v
-                elif v in (Type.str_list, Type.int_list, Type.json):
+                elif v in (_Type.str_list, _Type.int_list, _Type.json):
                     _type = v
 
                 if _name is None:
@@ -155,11 +155,11 @@ def _param(method_name, *p_args, **p_kwargs):
                             value = True
                         else:
                             value = bool(origin_v)
-                    elif _type == Type.str_list:
+                    elif _type == _Type.str_list:
                         value = [item for item in origin_v.split(',') if len(item) > 0]
-                    elif _type == Type.int_list:
+                    elif _type == _Type.int_list:
                         value = [int(item) for item in origin_v.split(',')]
-                    elif _type == Type.json:
+                    elif _type == _Type.json:
                         try:
                             value = json.loads(origin_v)
                         except ValueError:
@@ -190,7 +190,7 @@ def _param(method_name, *p_args, **p_kwargs):
     return paramed_decorator
 
 
-def get(*p_args, **p_kwargs):
+def _get(*p_args, **p_kwargs):
     """
     @get('param1', 'param2')
     @get(param1={'name':'parameter_name', 'type':int, 'default':0})
@@ -200,10 +200,10 @@ def get(*p_args, **p_kwargs):
     @get(param1=(int, 0))
     @get(param1=int)
     """
-    return _param('get', *p_args, **p_kwargs)
+    return __param('get', *p_args, **p_kwargs)
 
 
-def post(*p_args, **p_kwargs):
+def _post(*p_args, **p_kwargs):
     """
     @post('param1', 'param2')
     @post(param1={'name':'parameter_name', 'type':int, 'default':0})
@@ -213,11 +213,11 @@ def post(*p_args, **p_kwargs):
     @post(param1=(int, 0))
     @post(param1=int)
     """
-    return _param('post', *p_args, **p_kwargs)
+    return __param('post', *p_args, **p_kwargs)
 
 
-def param(*p_args, **p_kwargs):
-    return _param('param', *p_args, **p_kwargs)
+def _param(*p_args, **p_kwargs):
+    return __param('param', *p_args, **p_kwargs)
 
 
 url_mapping = {}
@@ -245,7 +245,7 @@ def url_dispatch(request, *args, **kwargs):
         return HttpResponse(status=403, content="Request Forbidden 403")
 
 
-def url(url_pattern, method=[M.POST, M.GET], is_json=False, *p_args, **p_kwargs):
+def _url(url_pattern, method=[_M.POST, _M.GET], is_json=False, *p_args, **p_kwargs):
     def paramed_decorator(func):
         @functools.wraps(func)
         def decorated(self, *args, **kwargs):

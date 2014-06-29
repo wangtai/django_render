@@ -14,7 +14,7 @@
 
 ##1. 简介
 
-基于Python 2.7 上重新定义 Django url 的用法，使用@语法可以轻松定义出 RESTful 风格的url，也可以用于声明 HTTP GET/POST 参数。也可以用于用户认证拦截。自动识别返回类型 HttepResponse, json, google-protobuf
+基于Python 2.7 上重新定义 Django url 的用法，使用@语法可以轻松定义出 RESTful 风格的 url，也可以用于声明 HTTP GET/POST 参数。也可以用于用户认证拦截。自动识别返回类型 HttpResponse, JSON, google-protobuf
 
 ##2. 安装
 使用 pip:
@@ -35,7 +35,6 @@
 	urlpatterns = patterns('',
 	    url(r'^', include('mysite.views')),
 	)
-
 	
 在views.py中声明: 
 
@@ -45,7 +44,7 @@
 		return True
 		
 定义 GET|POST /index:
-	
+
 	@url(r'^/index$')
 	
 定义 GET /index:
@@ -191,8 +190,6 @@ GET/POST 参数:
 	return 'message content'
 	# {'message':'message content'}
 	
-	
-	
 ###3.4. 用户认证
 
 	# /hello?access_secret_key=The_Key_Only_You_Know
@@ -254,7 +251,7 @@ GET/POST 参数:
 
 ##4. 注意
 
-> @url() 并不是真正 django 的url 方法，但因为是在基础上的封装，所以 django url 的其他用法 @url() 也同样支持
+> @url() 并不是真正 django 的 url 方法，但因为是在基础上的封装，所以 django url 的其他用法 @url() 也同样支持
 
 ##5. 交流
 

@@ -7,7 +7,7 @@
 
 	from django_render.annotations import *
 	
-	@url(r'^i/ndex$', method=M.POST)
+	@url(r'^/index$', method=M.POST)
 	@post(text=str)
 	def index(request, text):
 		return {'hello': text}

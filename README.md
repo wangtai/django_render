@@ -29,7 +29,7 @@ def index(request, text):
 ##2. 安装
 使用 pip:
 
-	sudo pip install git+http://xxxx
+	pip install git+https://github.com/wangtai/django_render.git 
 	
 使用 git submodule:
 

@@ -5,12 +5,14 @@
 
 一个非常轻量Django URL 的装饰器
 
+```python
 	from django_render.annotations import *
 	
 	@url(r'^/index$', method=M.POST)
 	@post(text=str)
 	def index(request, text):
 		return {'hello': text}
+```
 
 ##1. 简介
 

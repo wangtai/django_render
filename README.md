@@ -303,7 +303,7 @@ django_render.global_read_user_interceptor = read_user_interceptor
 
 ##5. 交流
 
-* mail list: xxxx
+* mail list: django-render@googlegroups.com
 
 ##6. 联系
 

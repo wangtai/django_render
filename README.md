@@ -32,22 +32,28 @@
 ###3.1. 定义url
 在urls.py中的定义:
 
+```python
 	from django.conf.urls import patterns, include, url
 
 	urlpatterns = patterns('',
 	    url(r'^', include('mysite.views')),
 	)
+```
 	
 在views.py中声明: 
 
+```python
 	@url(ur'^/hello$')
 	def link(request):
 		...
 		return True
+```		
 		
 定义 GET|POST /index:
 
+```python
 	@url(r'^/index$')
+```	
 	
 定义 GET /index:
 

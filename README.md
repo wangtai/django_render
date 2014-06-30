@@ -33,7 +33,7 @@ def index(request, text):
 	
 使用 git submodule:
 
-	git submoudle add https://github.com/wangtai/django_render.git
+	git submodule add https://github.com/wangtai/django_render.git
 
 ##3. 用法
 
@@ -304,6 +304,7 @@ django_render.global_read_user_interceptor = read_user_interceptor
 ##5. 交流
 
 * mail list: django-render@googlegroups.com
+* qq group id: 7790075
 
 ##6. 联系
 

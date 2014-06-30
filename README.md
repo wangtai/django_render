@@ -6,12 +6,12 @@
 一个非常轻量Django URL 的装饰器
 
 ```python
-	from django_render.annotations import *
+from django_render.annotations import *
 	
-	@url(r'^/index$', method=M.POST)
-	@post(text=str)
-	def index(request, text):
-		return {'hello': text}
+@url(r'^/index$', method=M.POST)
+@post(text=str)
+def index(request, text):
+	return {'hello': text}
 ```
 
 ##1. 简介
@@ -33,130 +33,151 @@
 在urls.py中的定义:
 
 ```python
-	from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, include, url
 
-	urlpatterns = patterns('',
-	    url(r'^', include('mysite.views')),
-	)
+urlpatterns = patterns('',
+    url(r'^', include('mysite.views')),
+)
 ```
 	
 在views.py中声明: 
 
 ```python
-	@url(ur'^/hello$')
-	def link(request):
-		...
-		return True
+@url(ur'^/hello$')
+def link(request):
+	...
+	return True
 ```		
 		
 定义 GET|POST /index:
 
 ```python
-	@url(r'^/index$')
+@url(r'^/index$')
 ```	
 	
 定义 GET /index:
 
-	@url(r'^/index$', method=M.GET)
+```python
+@url(r'^/index$', method=M.GET)
+```
 	
 定义 POST|PUT /name:
 
-	@url(r'^/name$', method=[M.POST, M.PUT])
+```python
+@url(r'^/name$', method=[M.POST, M.PUT])
+```
 	
 需要分别处理的 POST /name , PUT /name:
 
-	@url(r'^/name$', method=M.POST)
-	def post_name(request):
-		...
-		
-	@url(r'^/name$', method=M.PUT)
-	def put_name(request):
-		...
-		
+```python
+@url(r'^/name$', method=M.POST)
+def post_name(request):
+	...
+	
+@url(r'^/name$', method=M.PUT)
+def put_name(request):
+	...
+```
+
 RESTful Style URL:
 
-	@url(r'^/blog/$', method=M.GET)
-	def get_blog_list(request):
-		...
-		
-	@url(r'^/blog/(?P<id>\d+)$', method=M.GET)
-	def get_specific_blog(request, id):
-		...
-		
-	@url(r'^/blog/$', method=M.POST)
-	@post(text=str)
-	def post_a_blog(request, text):
-		...
-		
-	@url(r'^/blog/(?P<id>\d+)$', method=M.PUT)
-	@post(text=str)
-	def change_a_blog_text(request, id, text):
-		...
+```python
+@url(r'^/blog/$', method=M.GET)
+def get_blog_list(request):
+	...
+	
+@url(r'^/blog/(?P<id>\d+)$', method=M.GET)
+def get_specific_blog(request, id):
+	...
+	
+@url(r'^/blog/$', method=M.POST)
+@post(text=str)
+def post_a_blog(request, text):
+	...
+	
+@url(r'^/blog/(?P<id>\d+)$', method=M.PUT)
+@post(text=str)
+def change_a_blog_text(request, id, text):
+	...
+```
 		
 ###3.2. 声明HTTP参数
 
 GET/POST 参数:
 
-	@get(id=int)
-	@post(name=str)
+```python
+@get(id=int)
+@post(name=str)
+```
 	
 在方法上接收:
 	
-	def hello(request, id, name):
-		...
+```python
+def hello(request, id, name):
+	...
+```
 
 更灵活的使用方法, 以GET为例:
 
-    @get('param1', 'param2') 
-	''' 
-	HTTP参数: param1, param2
-	方法实参: param1, param2
-	类型: str
-	默认值: 无
-	'''
+```python
+@get('param1', 'param2') 
+''' 
+HTTP参数: param1, param2
+方法实参: param1, param2
+类型: str
+默认值: 无
+'''
+
+@get(param1=int)
+''' 
+HTTP参数: param1
+方法实参: param1
+类型: int
+默认值: 无
+'''
+
+@get(param1=(int, 0))    
+''' 
+HTTP参数: param1
+方法实参: param1
+类型: int
+默认值: 0
+'''
+
+@get(param1=('param_name', int, 0))
+''' 
+HTTP参数: param_name
+方法实参: param1
+类型: int
+默认值: 0
+'''
+```
 	
-    @get(param1=int)
-    ''' 
-	HTTP参数: param1
-	方法实参: param1
-	类型: int
-	默认值: 无
-	'''
-	
-    @get(param1=(int, 0))    
-    ''' 
-	HTTP参数: param1
-	方法实参: param1
-	类型: int
-	默认值: 0
-	'''
-	
-    @get(param1=('param_name', int, 0))
-    ''' 
-	HTTP参数: param_name
-	方法实参: param1
-	类型: int
-	默认值: 0
-	'''
-	
-    
 语义化的用法:
 
-    @get(param1={'name':'parameter_name', 'type':int, 'default':0})
-    @get(param1={'type':int, 'default':0})
-    @get(param1={'type':int })
+```python 
+@get(param1={'name':'parameter_name', 'type':int, 'default':0})
+@get(param1={'type':int, 'default':0})
+@get(param1={'type':int })
+```
     
 参数类型除了可以转换成:
 
-	str, int, bool
+```python 
+str, int, bool
+```
 	
 还支持array:
 
-	Type.int_list, Type.str_list, Type.json
+```python 
+Type.int_list, Type.str_list, Type.json
+```
 	
 方法如下:
 
-	@get(ids=Type.int_list, names=Type.str_list, extrs=Type.json)
+```python 
+@get(ids=Type.int_list, names=Type.str_list, extrs=Type.json)
+```
 	
 其中 Type.int_list 和 Type.str_list, Value应构造成 ids=1,2,3 和 name=Bob,Johns,Peter
 
@@ -166,53 +187,59 @@ GET/POST 参数:
 
 如果希望返回Json 数据类型
 
-	...
-	return True
-	# {'rt':true, 'message':''}
-	
-	...
-	return False
-	# {'rt':false, 'message':''}
-	
-	...
-	return True, {'data': ...}
-	# {'rt':true, 'data': ...}
-	
-	...
-	return True, 'message content'
-	# {'rt':true, 'message':'message content'}
-	
-	...
-	return {'data':'xxx', 'num':1, 'other':[{...},...]}
-	# {'data':'xxx', 'num':1, 'other':[{...},...]}
+```python 
+...
+return True
+# {'rt':true, 'message':''}
 
-	...
-	return []
-	# []
-	
-	...
-	return # direct return
-	# {}
-	
-	...
-	return 'message content'
-	# {'message':'message content'}
+...
+return False
+# {'rt':false, 'message':''}
+
+...
+return True, {'data': ...}
+# {'rt':true, 'data': ...}
+
+...
+return True, 'message content'
+# {'rt':true, 'message':'message content'}
+
+...
+return {'data':'xxx', 'num':1, 'other':[{...},...]}
+# {'data':'xxx', 'num':1, 'other':[{...},...]}
+
+...
+return []
+# []
+
+...
+return # direct return
+# {}
+
+...
+return 'message content'
+# {'message':'message content'}
+```
 	
 ###3.4. 用户认证
 
-	# /hello?access_secret_key=The_Key_Only_You_Know
-	@login_required(access_secret_key='The_Key_Only_You_Know', login_page='/login.html')
+```python
+# /hello?access_secret_key=The_Key_Only_You_Know
+@login_required(access_secret_key='The_Key_Only_You_Know', login_page='/login.html')
+```
 	
 全局定义参数:
 
-	## in settings.py
-	from django_render
-	...
-	django_render.global_access_secret_key = 'The_Key_Only_You_Know'
-	django_render.global_login_page = '/login.html'
-	
-	## in views.py
-	@login_required
+```python
+## in settings.py
+from django_render
+...
+django_render.global_access_secret_key = 'The_Key_Only_You_Know'
+django_render.global_login_page = '/login.html'
+
+## in views.py
+@login_required
+```
 	
 复杂的登录拦截器:
 

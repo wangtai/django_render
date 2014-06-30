@@ -243,46 +243,51 @@ django_render.global_login_page = '/login.html'
 	
 复杂的登录拦截器:
 
-	def read_user_interceptor(request):
-		...
-		if success:
-			return user
-		else:
-			return None
-			
+```python
+def read_user_interceptor(request):
 	...
-	
-	@url(r'^/hello$')
-	@login_required(read_user_interceptor=read_user_interceptor)
-	def hello(request, user):
-		'''
-		@param request: MUST BE EXIST!
-		@param user: MUST BE EXIST!
-		'''
-		return True, {'user': user.name}
+	if success:
+		return user
+	else:
+		return None
+		
+...
+
+@url(r'^/hello$')
+@login_required(read_user_interceptor=read_user_interceptor)
+def hello(request, user):
+	'''
+	@param request: MUST BE EXIST!
+	@param user: MUST BE EXIST!
+	'''
+	return True, {'user': user.name}
+```
 	
 全局定义 read_user_interceptor:
 
-	#in settings.py
-	from django_render
-	
-	def read_user_interceptor(request):
-		...
-		if success:
-			return user
-		else:
-			return None
-			
-	django_render.global_read_user_interceptor = read_user_interceptor
-	
-	## in views.py
-	@login_required
+```python
+#in settings.py
+from django_render
+
+def read_user_interceptor(request):
+	...
+	if success:
+		return user
+	else:
+		return None
+		
+django_render.global_read_user_interceptor = read_user_interceptor
+
+## in views.py
+@login_required
+```
 	
 如果是Ajax类型的请求
 	
-	@login_required(is_ajax=True)
-	#如果登录失败，不会跳转到 login page, 而是返回 {'rt':false, 'message':'login first'}
-	
+```python
+@login_required(is_ajax=True)
+#如果登录失败，不会跳转到 login page, 而是返回 {'rt':false, 'message':'login first'}
+```
 
 ##4. 注意
 

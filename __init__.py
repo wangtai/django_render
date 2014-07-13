@@ -6,7 +6,3 @@
 """
 
 __revision__ = '0.1'
-
-global_read_user_interceptor = None
-global_access_secret_key = None
-global_login_page = None

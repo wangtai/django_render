@@ -16,7 +16,7 @@ import json
 from django.conf.urls import url as django_url, patterns
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 
-from annotations import global_read_user_interceptor, global_access_secret_key, global_login_page
+from django_render import global_read_user_interceptor, global_access_secret_key, global_login_page
 
 
 class _Type:

@@ -149,9 +149,9 @@ def __param(method_name, *p_args, **p_kwargs):
                 if has_key:
                     if _type == bool:
                         origin_v = origin_v.lower()
-                        if origin_v == 'false' or origin_v == '0':
+                        if origin_v == 'false' or origin_v == '0' or origin_v == 'off':
                             value = False
-                        elif origin_v == 'true':
+                        elif origin_v == 'true' or origin_v == 'on':
                             value = True
                         else:
                             value = bool(origin_v)
@@ -164,7 +164,7 @@ def __param(method_name, *p_args, **p_kwargs):
                             value = json.loads(origin_v)
                         except ValueError:
                             return HttpResponse(
-                                json.dumps({'rt': False, 'info': "No JSON object could be decoded"}),
+                                json.dumps({'rt': False, 'message': "No JSON object could be decoded"}),
                                 content_type='application/json')
                     else:
                         value = _type(origin_v)
@@ -173,7 +173,7 @@ def __param(method_name, *p_args, **p_kwargs):
                         value = _default
                     else:
                         return HttpResponse(
-                            json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + _name + ";"}),
+                            json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + _name + ";"}),
                             content_type='application/json')
                 kwargs.update({k: value})
 
@@ -181,7 +181,7 @@ def __param(method_name, *p_args, **p_kwargs):
                 try:
                     kwargs.update({k: method[k].encode('utf-8')})
                 except KeyError:
-                    return HttpResponse(json.dumps({'rt': False, 'info': 'Please specify the parameter : ' + k}),
+                    return HttpResponse(json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + k}),
                                         content_type='application/json')
             return func(*args, **kwargs)
 

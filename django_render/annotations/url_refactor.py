@@ -46,7 +46,7 @@ class _RequestMethod:
 _M = _RequestMethod
 
 
-def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=None, login_page=None):
+def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=None, login_page=None, check_auth=None):
     def paramed_decorator(func):
         @functools.wraps(func)
         def decorated(*args, **kwargs):
@@ -63,6 +63,12 @@ def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor
             if user is None:
                 return response
             else:
+                if check_auth is not None:
+                    if check_auth(request, user):
+                        pass
+                    else:
+                        return HttpResponse(json.dumps({'rt': False, 'message': 'Permission Denied!'}),
+                                        content_type='application/json')
                 if 'user' in func.func_code.co_varnames:
                     kwargs.update({'user': user})
             return func(*args, **kwargs)

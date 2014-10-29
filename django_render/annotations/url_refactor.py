@@ -7,6 +7,9 @@
 """
 import logging
 
+from enum import Enum
+
+
 __revision__ = '0.1'
 
 import sys
@@ -19,15 +22,14 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django_render import global_read_user_interceptor, global_access_secret_key, global_login_page
 
 
-class _Type:
-    class str_list:
-        pass
+CONTENT_TYPE_JSON = 'application/json'
 
-    class int_list:
-        pass
 
-    class json:
-        pass
+class _Type(Enum):
+    str_list = 0
+    int_list = 1
+    json = 2
+    file_part = 3
 
 
 class _RequestMethod:
@@ -46,13 +48,14 @@ class _RequestMethod:
 _M = _RequestMethod
 
 
-def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=None, login_page=None, check_auth=None):
+def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor=None, login_page=None,
+                    check_auth=None):
     def paramed_decorator(func):
         @functools.wraps(func)
         def decorated(*args, **kwargs):
             if is_ajax:
                 response = HttpResponse(json.dumps({'rt': False, 'message': 'login first'}),
-                                        content_type='application/json')
+                                        content_type=CONTENT_TYPE_JSON)
             else:
                 response = HttpResponseRedirect(login_page)
             request = args[0]
@@ -68,7 +71,7 @@ def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor
                         pass
                     else:
                         return HttpResponse(json.dumps({'rt': False, 'message': 'Permission Denied!'}),
-                                        content_type='application/json')
+                                            content_type=CONTENT_TYPE_JSON)
                 if 'user' in func.func_code.co_varnames:
                     kwargs.update({'user': user})
             return func(*args, **kwargs)
@@ -171,7 +174,7 @@ def __param(method_name, *p_args, **p_kwargs):
                         except ValueError:
                             return HttpResponse(
                                 json.dumps({'rt': False, 'message': "No JSON object could be decoded"}),
-                                content_type='application/json')
+                                content_type=CONTENT_TYPE_JSON)
                     else:
                         value = _type(origin_v)
                 else:
@@ -180,7 +183,7 @@ def __param(method_name, *p_args, **p_kwargs):
                     else:
                         return HttpResponse(
                             json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + _name + ";"}),
-                            content_type='application/json')
+                            content_type=CONTENT_TYPE_JSON)
                 kwargs.update({k: value})
 
             for k in p_args:
@@ -188,7 +191,7 @@ def __param(method_name, *p_args, **p_kwargs):
                     kwargs.update({k: method[k].encode('utf-8')})
                 except KeyError:
                     return HttpResponse(json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + k}),
-                                        content_type='application/json')
+                                        content_type=CONTENT_TYPE_JSON)
             return func(*args, **kwargs)
 
         return decorated
@@ -220,6 +223,35 @@ def _post(*p_args, **p_kwargs):
     @post(param1=int)
     """
     return __param('post', *p_args, **p_kwargs)
+
+
+def _files(*p_args, **p_kwargs):
+    """
+
+    :param p_args:
+    :param p_kwargs:
+    :return:
+    """
+
+    def paramed_decorator(func):
+        @functools.wraps(func)
+        def decorated(*args, **kwargs):
+            request = args[0]
+            for file_name in p_args:
+                fp = request.FILES.get(file_name, None)
+
+                try:
+                    kwargs.update({file_name, fp})
+                except KeyError:
+                    return HttpResponse(
+                        json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name}),
+                        content_type=CONTENT_TYPE_JSON)
+
+            return func(*args, **kwargs)
+
+        return decorated
+
+    return paramed_decorator
 
 
 def _param(*p_args, **p_kwargs):
@@ -282,7 +314,7 @@ def _url(url_pattern, method=[_M.POST, _M.GET], is_json=False, *p_args, **p_kwar
 
 
 def json_result(rt):
-    response = HttpResponse(content_type='application/json')
+    response = HttpResponse(content_type=CONTENT_TYPE_JSON)
     if type(rt) == tuple:
         status = rt[0]
         if status:  # return True, {}

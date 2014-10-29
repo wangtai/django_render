@@ -17,7 +17,8 @@ setup(
     long_description=open('README.md').read(),
     license='Apache2',
     requires=[
-        'Django'
+        'Django',
+        'enum34'
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

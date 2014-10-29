@@ -7,7 +7,7 @@
 """
 import logging
 
-from enum import Enum
+from enum import Enum, enum
 
 
 __revision__ = '0.1'
@@ -29,7 +29,6 @@ class _Type(Enum):
     str_list = 0
     int_list = 1
     json = 2
-    file_part = 3
 
 
 class _RequestMethod:
@@ -241,7 +240,11 @@ def _files(*p_args, **p_kwargs):
                 fp = request.FILES.get(file_name, None)
 
                 try:
-                    kwargs.update({file_name, fp})
+                    kwargs.update({file_name: fp})
+                except ValueError:
+                    return HttpResponse(
+                        json.dumps({'rt': False, 'message': '1Please specify the parameter : ' + file_name}),
+                        content_type=CONTENT_TYPE_JSON)
                 except KeyError:
                     return HttpResponse(
                         json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name}),
@@ -323,7 +326,10 @@ def json_result(rt):
             response.content = json.dumps(rt_obj)
             return response
         else:  # return False, 'message'
-            response.content = json.dumps({'rt': status, 'message': rt[1]})
+            if isinstance(rt[1], enum.Enum) or isinstance(rt[1], Enum):
+                response.content = json.dumps({'rt': status, 'message': rt[1].value})
+            else:
+                response.content = json.dumps({'rt': status, 'message': rt[1]})
             return response
     elif type(rt) is bool:  # return True / return False
         response.content = json.dumps({'rt': rt, 'message': ''})

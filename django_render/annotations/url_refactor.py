@@ -150,6 +150,11 @@ def __param(method_name, *p_args, **p_kwargs):
                 has_key = True
                 try:
                     if _type == _Type.file:
+                        if method_name != 'post':
+                            return HttpResponse(
+                                json.dumps({'rt': False,
+                                            'message': "The file parameter <{}> should in POST method".format(_name)}),
+                                content_type=CONTENT_TYPE_JSON)
                         origin_v = request.FILES[_name]
                     else:
                         origin_v = method[_name].encode('utf-8').strip()
@@ -294,7 +299,6 @@ def url_dispatch(request, *args, **kwargs):
 
 
 def _url(url_pattern, method=None, is_json=False, *p_args, **p_kwargs):
-
     if method is None:
         method = [_M.POST, _M.GET]
 

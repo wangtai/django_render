@@ -29,6 +29,7 @@ class _Type(Enum):
     str_list = 0
     int_list = 1
     json = 2
+    file = 3
 
 
 class _RequestMethod:
@@ -148,9 +149,12 @@ def __param(method_name, *p_args, **p_kwargs):
 
                 has_key = True
                 try:
-                    origin_v = method[_name].encode('utf-8').strip()
-                    if len(origin_v) == 0:
-                        has_key = False
+                    if _type == _Type.file:
+                        origin_v = request.FILES[_name]
+                    else:
+                        origin_v = method[_name].encode('utf-8').strip()
+                        if len(origin_v) == 0:
+                            has_key = False
                 except KeyError:
                     has_key = False
 
@@ -174,6 +178,9 @@ def __param(method_name, *p_args, **p_kwargs):
                             return HttpResponse(
                                 json.dumps({'rt': False, 'message': "No JSON object could be decoded"}),
                                 content_type=CONTENT_TYPE_JSON)
+                    elif _type == _Type.file:
+                        value = origin_v
+                        pass
                     else:
                         value = _type(origin_v)
                 else:
@@ -243,7 +250,7 @@ def _files(*p_args, **p_kwargs):
                     kwargs.update({file_name: fp})
                 except ValueError:
                     return HttpResponse(
-                        json.dumps({'rt': False, 'message': '1Please specify the parameter : ' + file_name}),
+                        json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name}),
                         content_type=CONTENT_TYPE_JSON)
                 except KeyError:
                     return HttpResponse(
@@ -286,7 +293,11 @@ def url_dispatch(request, *args, **kwargs):
         return HttpResponse(status=403, content="Request Forbidden 403")
 
 
-def _url(url_pattern, method=[_M.POST, _M.GET], is_json=False, *p_args, **p_kwargs):
+def _url(url_pattern, method=None, is_json=False, *p_args, **p_kwargs):
+
+    if method is None:
+        method = [_M.POST, _M.GET]
+
     def paramed_decorator(func):
         @functools.wraps(func)
         def decorated(self, *args, **kwargs):

@@ -62,7 +62,7 @@ def urlpatterns_maker(**kwargs):
     # print(folder_name_views)
     # print(app_name)
     # print files
-    print(files)
+    # print(files)
     urlpatterns = patterns('', )
     for file_name in files:
         if file_name in kwargs:

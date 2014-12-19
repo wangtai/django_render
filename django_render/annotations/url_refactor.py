@@ -157,7 +157,7 @@ def __param(method_name, *p_args, **p_kwargs):
                                 content_type=CONTENT_TYPE_JSON)
                         origin_v = request.FILES[_name]
                     else:
-                        origin_v = method[_name].encode('utf-8').strip()
+                        origin_v = ','.join(method.getlist(_name)).encode('utf-8').strip()
                         if len(origin_v) == 0:
                             has_key = False
                 except KeyError:

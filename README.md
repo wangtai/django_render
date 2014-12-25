@@ -29,8 +29,6 @@ def index(request, text):
 ##2. 安装
 使用 pip:
 
-	pip install git+https://github.com/wangtai/django_render.git 
-	
 	pip install django-render-url 
 
 ##3. 用法
@@ -185,7 +183,13 @@ Type.int_list, Type.str_list, Type.json
 @get(ids=Type.int_list, names=Type.str_list, extrs=Type.json)
 ```
 	
-其中 Type.int_list 和 Type.str_list, Value应构造成 ids=1,2,3 和 name=Bob,Johns,Peter
+其中 Type.int_list 和 Type.str_list, Value应构造成 ids=1,2,3 和 name=Bob,Johns,Peter, 或者 id=1&id=2&id=3 也可以
+
+上传文件file type
+
+```python 
+@post(image=Type.file)
+```
 
 ###3.3. 返回类型
 
@@ -201,6 +205,10 @@ return True
 ...
 return False
 # {'rt':false, 'message':''}
+
+...
+return False, ErrorCode.code1 # requires enum34 # from enum.enum import Enum; class ErrorCode(Enum): pass
+# {'rt':false, 'message':1}
 
 ...
 return True, {'data': ...}
@@ -231,7 +239,7 @@ return 'message content'
 
 ```python
 # /hello?access_secret_key=The_Key_Only_You_Know
-@login_required(access_secret_key='The_Key_Only_You_Know', login_page='/login.html')
+@login_required(access_secret_key='The_Key_Only_You_Know', login_page='/login.html', check_auth=check_auth)
 ```
 	
 全局定义参数:
@@ -313,4 +321,3 @@ django_render.global_read_user_interceptor = read_user_interceptor
 
 1. 自动识别google-protobuf
 2. 支持 Form, Ajax 使用 PUT/DELETE/...
-3. Type.int_list, Type.str_list 识别 id=1&id=2&id=3

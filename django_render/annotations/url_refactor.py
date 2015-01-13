@@ -60,7 +60,7 @@ def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor
                 response = HttpResponseRedirect(login_page)
             request = args[0]
             if (hasattr(request, 'user') and request.user.is_authenticated()) \
-                    or access_secret_key is request.GET.get('access_secret_key', ''):
+                    or access_secret_key == request.GET.get('access_secret_key', ''):
                 return func(*args, **kwargs)
             user = read_user_interceptor(request)
             if user is None:

@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-render-url',
-    version='0.9.8.2',
+    version='0.9.8.6',
     packages=find_packages(),
     author='WANG Tai',
     author_email='i@wangtai.me',

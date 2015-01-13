@@ -31,9 +31,7 @@ def index(request, text):
 
 	pip install git+https://github.com/wangtai/django_render.git 
 	
-使用 git submodule:
-
-	git submodule add https://github.com/wangtai/django_render.git
+	pip install django-render-url 
 
 ##3. 用法
 

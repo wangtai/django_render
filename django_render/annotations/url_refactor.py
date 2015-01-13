@@ -139,7 +139,7 @@ def __param(method_name, *p_args, **p_kwargs):
                     _default = v[1]
                 elif type(v) == type:
                     _type = v
-                elif v in (_Type.str_list, _Type.int_list, _Type.json):
+                elif v in (_Type.str_list, _Type.int_list, _Type.json, _Type.file):
                     _type = v
 
                 if _name is None:

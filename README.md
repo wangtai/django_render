@@ -52,6 +52,33 @@ def link(request):
 	...
 	return True
 ```		
+
+在views 是一个package 地地情况下，可以使用url自动扫描:
+
+```python
+    from django_render.url_patterns_maker import urlpatterns_maker
+    urlpatterns = urlpatterns_maker()
+```
+上面地代码放到views/\_\_init\_\_.py 中, 就可以自动将views/下面其他的python file name 作为url 的一级目录。如果有特俗名字映射需求可以如下写法：
+
+```python
+    from django_render.url_patterns_maker import urlpatterns_maker
+    urlpatterns = urlpatterns_maker(default='^', profile='^my/')
+```
+
+等同于如下写法：
+```python
+    urlpatterns = patterns('',
+                           url(ur'^', include('chooper_api.views.default')),
+                           url(ur'^my/', include('chooper_api.views.profile')),
+                           url(ur'^friend/', include('chooper_api.views.friend')),
+                           url(ur'^feed/', include('chooper_api.views.feed')),
+    )
+
+```
+
+note that unspecified views(friend.py and feed.py here) got their file name(without extension,
+and surrounded by '^' and '/') as the url regex
 		
 定义 GET|POST /index:
 

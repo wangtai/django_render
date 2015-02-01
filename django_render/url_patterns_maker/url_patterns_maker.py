@@ -78,4 +78,6 @@ def urlpatterns_maker(**kwargs):
                                     url(ur'^{0}/'.format(file_name),
                                         include('{0}.{1}'.format(prefix, file_name)))
                                     )
+        for urlpattern in urlpatterns[-1].url_patterns:
+            urlpattern.regex  # url pattern check, thanks to django
     return urlpatterns

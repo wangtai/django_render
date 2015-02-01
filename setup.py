@@ -8,13 +8,13 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-render-url',
-    version='0.9.8.7',
+    version='0.9.8.8',
     packages=find_packages(),
     author='WANG Tai',
     author_email='i@wangtai.me',
     url='https://github.com/wangtai/django_render',
     description='a very light django plugin',
-    #long_description=open('README.md').read(),
+    long_description=open('README.md').read(),
     license='Apache2',
     requires=[
         'Django',

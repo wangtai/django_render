@@ -5,6 +5,10 @@
 
 from setuptools import setup, find_packages
 
+try:
+    long_description = open('README.md').read()
+except:
+    long_description = ''
 
 setup(
     name='django-render-url',
@@ -14,7 +18,7 @@ setup(
     author_email='i@wangtai.me',
     url='https://github.com/wangtai/django_render',
     description='a very light django plugin',
-    long_description=open('README.md').read(),
+    long_description=long_description,
     license='Apache2',
     requires=[
         'Django',

@@ -54,7 +54,7 @@ def urlpatterns_maker(**kwargs):
     path_app, folder_name_views = os.path.split(path_views)
     app_name = os.path.split(path_app)[1]
     files = [f.split('.')[0] for f in os.listdir(path_views) if
-             os.path.isfile(os.path.join(path_views, f)) and f.endswith('py') and not file_name_init.startswith(f)]
+             (f.endswith('.py') or os.path.isdir(os.path.join(path_views, f))) and file_name_init != f]
     path_list = path_init.split('/')
     views_index = path_list.index('views')
     prefix = '.'.join(path_list[views_index-1:-1])

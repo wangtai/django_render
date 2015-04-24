@@ -155,7 +155,7 @@ def __param(method_name, *p_args, **p_kwargs):
                                 json.dumps({'rt': False,
                                             'message': "The file parameter <{}> should in POST method".format(_name)}),
                                 content_type=CONTENT_TYPE_JSON)
-                        origin_v = request.FILES[_name]
+                        origin_v = request.FILES.get(_name, None)
                     else:
                         origin_v = ','.join(method.getlist(_name)).encode('utf-8').strip()
                         if len(origin_v) == 0:

@@ -7,7 +7,7 @@
 """
 import logging
 
-from enum import Enum, enum
+from enum import Enum
 
 
 __revision__ = '0.1'
@@ -320,10 +320,10 @@ def _url(url_pattern, method=None, is_json=False, *p_args, **p_kwargs):
 
         module = sys.modules[func.__module__]
         if not hasattr(module, 'urlpatterns'):
-            module.urlpatterns = patterns('', )
+            module.urlpatterns = []
 
-        module.urlpatterns += \
-            patterns('', django_url(url_pattern, url_dispatch,
+        module.urlpatterns.append(
+            django_url(url_pattern, url_dispatch,
                                     {'url_pattern': url_key, 'is_json': is_json}, *p_args,
                                     **p_kwargs), )
         return decorated

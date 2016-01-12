@@ -7,7 +7,8 @@
 """
 import logging
 
-from enum import Enum, enum
+from enum import Enum
+from copy import deepcopy
 
 
 __revision__ = '0.1'
@@ -112,7 +113,9 @@ def __param(method_name, *p_args, **p_kwargs):
         @functools.wraps(func)
         def decorated(*args, **kwargs):
             request = args[0]
-            m = {'get': request.GET, 'post': request.POST, 'param': request.REQUEST}
+            req_param = deepcopy(request.GET)
+            req_param.update(request.POST)
+            m = {'get': request.GET, 'post': request.POST, 'param': req_param}
             method = m[method_name]
             for k, v in p_kwargs.items():
                 _name = None
@@ -320,10 +323,10 @@ def _url(url_pattern, method=None, is_json=False, *p_args, **p_kwargs):
 
         module = sys.modules[func.__module__]
         if not hasattr(module, 'urlpatterns'):
-            module.urlpatterns = patterns('', )
+            module.urlpatterns = []
 
-        module.urlpatterns += \
-            patterns('', django_url(url_pattern, url_dispatch,
+        module.urlpatterns.append(
+            django_url(url_pattern, url_dispatch,
                                     {'url_pattern': url_key, 'is_json': is_json}, *p_args,
                                     **p_kwargs), )
         return decorated

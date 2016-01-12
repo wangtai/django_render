@@ -19,8 +19,8 @@ __all__ = (
     'files',
 )
 
-from url_refactor import _Type, _RequestMethod
-from url_refactor import _login_required, _get, _post, _url, _files
+from .url_refactor import _Type, _RequestMethod
+from .url_refactor import _login_required, _get, _post, _url, _files
 
 Type = _Type
 RequestMethod = _RequestMethod

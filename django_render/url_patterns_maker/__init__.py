@@ -7,4 +7,4 @@
 
 revision = '0.1'
 
-from url_patterns_maker import urlpatterns_maker
+from .url_patterns_maker import urlpatterns_maker

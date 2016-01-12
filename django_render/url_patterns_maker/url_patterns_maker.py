@@ -53,7 +53,7 @@ def urlpatterns_maker(**kwargs):
     path_views, file_name_init = os.path.split(path_init)
     path_app, folder_name_views = os.path.split(path_views)
     app_name = os.path.split(path_app)[1]
-    files = [f.split('.')[0] for f in os.listdir(path_views) if
+    files = [f.split('.')[0] for f in os.listdir(path_views) if not f.startswith('_') and
              (f.endswith('.py') or os.path.isdir(os.path.join(path_views, f))) and file_name_init != f]
     path_list = path_init.split('/')
     views_index = path_list.index('views')
@@ -64,20 +64,19 @@ def urlpatterns_maker(**kwargs):
     # print(path_app)
     # print(folder_name_views)
     # print(app_name)
-    # print files
     # print(files)
-    urlpatterns = patterns('', )
+    urlpatterns = []
     for file_name in files:
         if file_name in kwargs:
-            urlpatterns += patterns('',
-                                    url(ur'{0}'.format(kwargs[file_name]),
-                                        include('{0}.{1}'.format(prefix, file_name)))
+            urlpatterns.append(
+                                url(r'{0}'.format(kwargs[file_name]),
+                                    include('{0}.{1}'.format(prefix, file_name)))
                                     )
         else:
-            urlpatterns += patterns('',
-                                    url(ur'^{0}/'.format(file_name),
-                                        include('{0}.{1}'.format(prefix, file_name)))
+            urlpatterns.append(
+                                url(r'^{0}/'.format(file_name),
+                                    include('{0}.{1}'.format(prefix, file_name)))
                                     )
-        for urlpattern in urlpatterns[-1].url_patterns:
+        for urlpattern in urlpatterns:
             urlpattern.regex  # url pattern check, thanks to django
     return urlpatterns

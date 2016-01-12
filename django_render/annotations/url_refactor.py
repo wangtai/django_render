@@ -8,6 +8,7 @@
 import logging
 
 from enum import Enum
+from copy import deepcopy
 
 
 __revision__ = '0.1'
@@ -112,7 +113,9 @@ def __param(method_name, *p_args, **p_kwargs):
         @functools.wraps(func)
         def decorated(*args, **kwargs):
             request = args[0]
-            m = {'get': request.GET, 'post': request.POST, 'param': request.REQUEST}
+            req_param = deepcopy(request.GET)
+            req_param.update(request.POST)
+            m = {'get': request.GET, 'post': request.POST, 'param': req_param}
             method = m[method_name]
             for k, v in p_kwargs.items():
                 _name = None

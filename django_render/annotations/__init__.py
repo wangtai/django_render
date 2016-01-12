@@ -5,6 +5,8 @@
 """
 url注解
 """
+from .url_refactor import _Type, _RequestMethod
+from .url_refactor import _login_required, _get, _post, _url, _files
 
 __revision__ = '0.1'
 
@@ -18,9 +20,6 @@ __all__ = (
     'url',
     'files',
 )
-
-from url_refactor import _Type, _RequestMethod
-from url_refactor import _login_required, _get, _post, _url, _files
 
 Type = _Type
 RequestMethod = _RequestMethod

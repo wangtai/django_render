@@ -6,13 +6,13 @@ from setuptools import setup, find_packages
 
 if sys.version > '3':
     requires = [
-                   'django >= 1.9.1',
-               ],
+        'django >= 1.9.1'
+    ]
 else:
     requires = [
-                   'django >= 1.9.1',
-                   'enum34 >= 1.1.2'
-               ],
+        'enum34 >= 1.1.2',
+        'django >= 1.9.1',
+    ]
 
 try:
     long_description = open('README.md').read()
@@ -29,7 +29,7 @@ setup(
         description='a very light django plugin',
         long_description=long_description,
         license='Apache2',
-        requires=requires,
+        install_requires=requires,
         classifiers=[
             'Development Status :: 4 - Beta',
             'Environment :: Web Environment',

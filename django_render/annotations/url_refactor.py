@@ -71,7 +71,7 @@ def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor
                                             content_type=CONTENT_TYPE_JSON)
 
                 if sys.version > '3':
-                    co_varnames = func.code.co_varnames
+                    co_varnames = func.__code__.co_varnames
                 else:
                     co_varnames = func.func_code.co_varnames
                 if 'user' in co_varnames:

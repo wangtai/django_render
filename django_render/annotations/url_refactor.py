@@ -69,7 +69,12 @@ def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor
                     else:
                         return HttpResponse(json.dumps({'rt': False, 'message': 'Permission Denied!'}),
                                             content_type=CONTENT_TYPE_JSON)
-                if 'user' in func.func_code.co_varnames:
+
+                if sys.version > '3':
+                    co_varnames = func.code.co_varnames
+                else:
+                    co_varnames = func.func_code.co_varnames
+                if 'user' in co_varnames:
                     kwargs.update({'user': user})
             return func(*args, **kwargs)
 

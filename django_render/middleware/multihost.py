@@ -8,10 +8,10 @@
 # instance to server multiple distinct hosts.
 ##
 """
-__revision__ = '0.1'
-
 from django.conf import settings
 from django.utils.cache import patch_vary_headers
+
+__revision__ = '0.1'
 
 
 class MultiHostMiddleware:

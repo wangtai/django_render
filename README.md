@@ -11,7 +11,7 @@ Django Render
 
 ##0. 开始
 
-一个非常轻量Django URL 的装饰器
+一个非常轻量的 Django URL 装饰器
 
 ```python
 from django_render.annotations import *
@@ -24,7 +24,7 @@ def index(request, text):
 
 ##1. 简介
 
-基于Python 2.7 上重新定义 Django url 的用法，使用@语法可以轻松定义出 RESTful 风格的 url，也可以用于声明 HTTP GET/POST 参数。也可以用于用户认证拦截。自动识别返回类型 HttpResponse, JSON, google-protobuf
+基于Python 2.7 重新定义 Django url 的用法，使用@语法可以轻松定义出 RESTful 风格的 url，也可以用于声明 HTTP GET/POST 参数。也可以用于用户认证拦截。自动识别返回类型 HttpResponse, JSON, google-protobuf
 
 ##2. 安装
 使用 pip:
@@ -53,13 +53,13 @@ def link(request):
 	return True
 ```		
 
-在views 是一个package 地地情况下，可以使用url自动扫描:
+在views 是一个package 的情况下，可以使用url自动扫描:
 
 ```python
     from django_render.url_patterns_maker import urlpatterns_maker
     urlpatterns = urlpatterns_maker()
 ```
-上面地代码放到views/\_\_init\_\_.py 中, 就可以自动将views/下面其他的python file name 作为url 的一级目录。如果有特俗名字映射需求可以如下写法：
+上面的代码放到views/\_\_init\_\_.py 中, 就可以自动将views/下面其他的python file name 作为url 的一级目录。如果有特殊名字映射需求可以如下写法：
 
 ```python
     from django_render.url_patterns_maker import urlpatterns_maker

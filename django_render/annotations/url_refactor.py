@@ -162,12 +162,11 @@ def __param(method_name, *p_args, **p_kwargs):
                                     content_type=CONTENT_TYPE_JSON)
                         origin_v = request.FILES.get(_name, None)
                     else:
-                        origin_v = ','.join(method.getlist(_name)).encode('utf-8').strip()
+                        origin_v = ','.join(method.getlist(_name)).strip()
                         if len(origin_v) == 0:
                             has_key = False
                 except KeyError:
                     has_key = False
-
                 if has_key:
                     if _type == bool:
                         origin_v = origin_v.lower()
@@ -191,6 +190,8 @@ def __param(method_name, *p_args, **p_kwargs):
                     elif _type == _Type.file:
                         value = origin_v
                         pass
+                    elif _type == str:
+                        value = origin_v
                     else:
                         value = _type(origin_v)
                 else:

@@ -6,12 +6,12 @@ from setuptools import setup, find_packages
 
 if sys.version > '3':
     requires = [
-        'django >= 1.9.1'
+        'django >= 1.8.9'
     ]
 else:
     requires = [
         'enum34 >= 1.1.2',
-        'django >= 1.9.1',
+        'django >= 1.8.9',
     ]
 
 try:
@@ -21,7 +21,7 @@ except:
 
 setup(
         name='django-render-url',
-        version='0.10.2.1',
+        version='0.10.2.2',
         packages=find_packages(),
         author='WANG Tai',
         author_email='i@wangtai.me',

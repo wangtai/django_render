@@ -51,7 +51,7 @@ def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor
         @functools.wraps(func)
         def decorated(*args, **kwargs):
             if is_ajax:
-                response = HttpResponse(json.dumps({'rt': False, 'message': 'login first'}),
+                response = HttpResponse(json.dumps({'rt': False, 'message': 'login first'}, separators=(',', ':')),
                                         content_type=CONTENT_TYPE_JSON)
             else:
                 response = HttpResponseRedirect(login_page)
@@ -67,7 +67,7 @@ def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor
                     if check_auth(request, user):
                         pass
                     else:
-                        return HttpResponse(json.dumps({'rt': False, 'message': 'Permission Denied!'}),
+                        return HttpResponse(json.dumps({'rt': False, 'message': 'Permission Denied!'}, separators=(',', ':')),
                                             content_type=CONTENT_TYPE_JSON)
 
                 if sys.version > '3':
@@ -158,16 +158,15 @@ def __param(method_name, *p_args, **p_kwargs):
                             return HttpResponse(
                                     json.dumps({'rt': False,
                                                 'message': "The file parameter <{}> should in POST method".format(
-                                                    _name)}),
+                                                    _name)}, separators=(',', ':')),
                                     content_type=CONTENT_TYPE_JSON)
                         origin_v = request.FILES.get(_name, None)
                     else:
-                        origin_v = ','.join(method.getlist(_name)).encode('utf-8').strip()
+                        origin_v = ','.join(method.getlist(_name)).strip()
                         if len(origin_v) == 0:
                             has_key = False
                 except KeyError:
                     has_key = False
-
                 if has_key:
                     if _type == bool:
                         origin_v = origin_v.lower()
@@ -186,11 +185,13 @@ def __param(method_name, *p_args, **p_kwargs):
                             value = json.loads(origin_v)
                         except ValueError:
                             return HttpResponse(
-                                    json.dumps({'rt': False, 'message': "No JSON object could be decoded"}),
+                                    json.dumps({'rt': False, 'message': "No JSON object could be decoded"}, separators=(',', ':')),
                                     content_type=CONTENT_TYPE_JSON)
                     elif _type == _Type.file:
                         value = origin_v
                         pass
+                    elif _type == str:
+                        value = origin_v
                     else:
                         value = _type(origin_v)
                 else:
@@ -198,7 +199,7 @@ def __param(method_name, *p_args, **p_kwargs):
                         value = _default
                     else:
                         return HttpResponse(
-                                json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + _name + ";"}),
+                                json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + _name + ";"}, separators=(',', ':')),
                                 content_type=CONTENT_TYPE_JSON)
                 kwargs.update({k: value})
 
@@ -206,7 +207,7 @@ def __param(method_name, *p_args, **p_kwargs):
                 try:
                     kwargs.update({k: method[k].encode('utf-8')})
                 except KeyError:
-                    return HttpResponse(json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + k}),
+                    return HttpResponse(json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + k}, separators=(',', ':')),
                                         content_type=CONTENT_TYPE_JSON)
             return func(*args, **kwargs)
 
@@ -260,11 +261,11 @@ def _files(*p_args, **p_kwargs):
                     kwargs.update({file_name: fp})
                 except ValueError:
                     return HttpResponse(
-                            json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name}),
+                            json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name}, separators=(',', ':')),
                             content_type=CONTENT_TYPE_JSON)
                 except KeyError:
                     return HttpResponse(
-                            json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name}),
+                            json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name}, separators=(',', ':')),
                             content_type=CONTENT_TYPE_JSON)
 
             return func(*args, **kwargs)
@@ -343,29 +344,29 @@ def json_result(rt):
         if status:  # return True, {}
             rt_obj = {'rt': status}
             rt_obj.update(rt[1])
-            response.content = json.dumps(rt_obj)
+            response.content = json.dumps(rt_obj, separators=(',', ':'))
             return response
         else:  # return False, 'message'
             if isinstance(rt[1], Enum):
-                response.content = json.dumps({'rt': status, 'message': rt[1].value})
+                response.content = json.dumps({'rt': status, 'message': rt[1].value}, separators=(',', ':'))
             else:
-                response.content = json.dumps({'rt': status, 'message': rt[1]})
+                response.content = json.dumps({'rt': status, 'message': rt[1]}, separators=(',', ':'))
             return response
     elif type(rt) is bool:  # return True / return False
-        response.content = json.dumps({'rt': rt, 'message': ''})
+        response.content = json.dumps({'rt': rt, 'message': ''}, separators=(',', ':'))
         return response
     elif type(rt) is dict:  # return {}
-        response.content = json.dumps(rt)
+        response.content = json.dumps(rt, separators=(',', ':'))
         return response
     elif type(rt) is list:  # return []
-        response.content = json.dumps(rt)
+        response.content = json.dumps(rt, separators=(',', ':'))
         return response
     elif type(rt) is HttpResponse:  # return {}
         response = rt
         return response
     elif rt is None:  # direct return
-        response.content = json.dumps({})
+        response.content = json.dumps({}, separators=(',', ':'))
         return response
     else:
-        response.content = json.dumps({'message': str(rt)})
+        response.content = json.dumps({'message': str(rt)}, separators=(',', ':'))
         return response

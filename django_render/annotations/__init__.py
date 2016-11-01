@@ -13,7 +13,7 @@ import functools
 
 
 from url_refactor import _Type, _RequestMethod, _M
-from url_refactor import _login_required, _get, _post, _url, _files, _field, _param
+from url_refactor import _login_required, _get, _post, _url, _files
 
 
 Type = _Type

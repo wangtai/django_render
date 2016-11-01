@@ -31,7 +31,13 @@ files = _files
 #    setattr(__builtin__, method, functools.partial(_url, method=method))
 
 
-GET =  functools.partial(_url, method='GET')
-POST =  functools.partial(_url, method='POST')
-Params = _param
-Fields = _field
+GET = functools.partial(_url, method=_M.GET)
+POST = functools.partial(_url, method=_M.POST)
+PUT = functools.partial(_url, method=_M.PUT)
+HEAD = functools.partial(_url, method=_M.HEAD)
+TRACE = functools.partial(_url, method=_M.TRACE)
+DELETE = functools.partial(_url, method=_M.DELETE)
+OPTIONS = functools.partial(_url, method=_M.OPTIONS)
+
+Params = _get
+Fields = _post

@@ -114,8 +114,7 @@ def __param(method_name, *p_args, **p_kwargs):
         def decorated(*args, **kwargs):
             request = args[0]
             m = {'get': request.GET, 'post': request.POST, 'param': request.REQUEST}
-            # method = m[method_name]
-            method = m[request.method.lower()] if request.method in ("GET", "POST") else m[method_name]
+            method = m[method_name]
             for k, v in p_kwargs.items():
                 _name = None
                 _type = None
@@ -275,10 +274,6 @@ def _param(*p_args, **p_kwargs):
     return __param('param', *p_args, **p_kwargs)
 
 
-def _field(*p_args, **p_kwargs):
-    return __param('', *p_args, **p_kwargs)
-
-
 url_mapping = {}
 
 
@@ -370,5 +365,3 @@ def json_result(rt):
     else:
         response.content = json.dumps({'message': str(rt)})
         return response
-
-

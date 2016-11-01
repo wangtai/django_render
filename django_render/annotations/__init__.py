@@ -26,9 +26,12 @@ url = _url
 files = _files
 
 # HTTP请求方法装饰器
-methods = ("GET", "POST")
-for method in methods:
-    setattr(__builtin__, method, functools.partial(_url, method=method))
+#methods = ("GET", "POST")
+#for method in methods:
+#    setattr(__builtin__, method, functools.partial(_url, method=method))
 
+
+GET =  functools.partial(_url, method='GET')
+POST =  functools.partial(_url, method='POST')
 Params = _param
 Fields = _field

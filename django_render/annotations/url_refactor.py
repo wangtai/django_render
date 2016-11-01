@@ -7,7 +7,8 @@
 """
 import logging
 
-from enum import Enum, enum
+from enum import Enum
+import enum
 
 
 __revision__ = '0.1'

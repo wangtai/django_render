@@ -7,7 +7,8 @@
 """
 import logging
 
-from enum import Enum, enum
+from enum import Enum
+import enum
 
 
 __revision__ = '0.1'
@@ -364,5 +365,3 @@ def json_result(rt):
     else:
         response.content = json.dumps({'message': str(rt)})
         return response
-
-

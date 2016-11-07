@@ -21,7 +21,7 @@ except:
 
 setup(
         name='django-render-url',
-        version='0.10.3',
+        version='0.11',
         packages=find_packages(),
         author='WANG Tai',
         author_email='i@wangtai.me',

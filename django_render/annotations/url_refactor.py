@@ -5,19 +5,20 @@
 """
 方法定义
 """
+
+__revision__ = '0.1'
+
 import functools
 import json
 import logging
 import sys
 from copy import deepcopy
+from enum import Enum
 
 from django.conf.urls import url as django_url
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from enum import Enum
 
 from django_render import global_read_user_interceptor, global_access_secret_key, global_login_page
-
-__revision__ = '0.1'
 
 CONTENT_TYPE_JSON = 'application/json'
 
@@ -67,8 +68,9 @@ def _login_required(is_ajax=False, access_secret_key=None, read_user_interceptor
                     if check_auth(request, user):
                         pass
                     else:
-                        return HttpResponse(json.dumps({'rt': False, 'message': 'Permission Denied!'}, separators=(',', ':')),
-                                            content_type=CONTENT_TYPE_JSON)
+                        return HttpResponse(
+                            json.dumps({'rt': False, 'message': 'Permission Denied!'}, separators=(',', ':')),
+                            content_type=CONTENT_TYPE_JSON)
 
                 if sys.version > '3':
                     co_varnames = func.__code__.co_varnames
@@ -156,10 +158,10 @@ def __param(method_name, *p_args, **p_kwargs):
                     if _type == _Type.file:
                         if method_name != 'post':
                             return HttpResponse(
-                                    json.dumps({'rt': False,
-                                                'message': "The file parameter <{}> should in POST method".format(
-                                                    _name)}, separators=(',', ':')),
-                                    content_type=CONTENT_TYPE_JSON)
+                                json.dumps({'rt': False,
+                                            'message': "The file parameter <{}> should in POST method".format(
+                                                _name)}, separators=(',', ':')),
+                                content_type=CONTENT_TYPE_JSON)
                         origin_v = request.FILES.get(_name, None)
                     else:
                         origin_v = ','.join(method.getlist(_name)).strip()
@@ -185,8 +187,9 @@ def __param(method_name, *p_args, **p_kwargs):
                             value = json.loads(origin_v)
                         except ValueError:
                             return HttpResponse(
-                                    json.dumps({'rt': False, 'message': "No JSON object could be decoded"}, separators=(',', ':')),
-                                    content_type=CONTENT_TYPE_JSON)
+                                json.dumps({'rt': False, 'message': "No JSON object could be decoded"},
+                                           separators=(',', ':')),
+                                content_type=CONTENT_TYPE_JSON)
                     elif _type == _Type.file:
                         value = origin_v
                         pass
@@ -199,15 +202,17 @@ def __param(method_name, *p_args, **p_kwargs):
                         value = _default
                     else:
                         return HttpResponse(
-                                json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + _name + ";"}, separators=(',', ':')),
-                                content_type=CONTENT_TYPE_JSON)
+                            json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + _name + ";"},
+                                       separators=(',', ':')),
+                            content_type=CONTENT_TYPE_JSON)
                 kwargs.update({k: value})
 
             for k in p_args:
                 try:
                     kwargs.update({k: method[k].encode('utf-8')})
                 except KeyError:
-                    return HttpResponse(json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + k}, separators=(',', ':')),
+                    return HttpResponse(json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + k},
+                                                   separators=(',', ':')),
                                         content_type=CONTENT_TYPE_JSON)
             return func(*args, **kwargs)
 
@@ -261,12 +266,14 @@ def _files(*p_args, **p_kwargs):
                     kwargs.update({file_name: fp})
                 except ValueError:
                     return HttpResponse(
-                            json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name}, separators=(',', ':')),
-                            content_type=CONTENT_TYPE_JSON)
+                        json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name},
+                                   separators=(',', ':')),
+                        content_type=CONTENT_TYPE_JSON)
                 except KeyError:
                     return HttpResponse(
-                            json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name}, separators=(',', ':')),
-                            content_type=CONTENT_TYPE_JSON)
+                        json.dumps({'rt': False, 'message': 'Please specify the parameter : ' + file_name},
+                                   separators=(',', ':')),
+                        content_type=CONTENT_TYPE_JSON)
 
             return func(*args, **kwargs)
 
@@ -329,9 +336,9 @@ def _url(url_pattern, method=None, is_json=False, *p_args, **p_kwargs):
             module.urlpatterns = []
 
         module.urlpatterns.append(
-                django_url(url_pattern, url_dispatch,
-                           {'url_pattern': url_key, 'is_json': is_json}, *p_args,
-                           **p_kwargs), )
+            django_url(url_pattern, url_dispatch,
+                       {'url_pattern': url_key, 'is_json': is_json}, *p_args,
+                       **p_kwargs), )
         return decorated
 
     return paramed_decorator

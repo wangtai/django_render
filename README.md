@@ -11,7 +11,7 @@ Django Render
 
 ##0. 开始
 
-一个非常轻量Django URL 的装饰器
+一个非常轻量的 Django URL 装饰器
 
 ```python
 from django_render.annotations import *
@@ -24,13 +24,11 @@ def index(request, text):
 
 ##1. 简介
 
-基于Python 2.7 上重新定义 Django url 的用法，使用@语法可以轻松定义出 RESTful 风格的 url，也可以用于声明 HTTP GET/POST 参数。也可以用于用户认证拦截。自动识别返回类型 HttpResponse, JSON, google-protobuf
+基于Python 2.7 重新定义 Django url 的用法，使用@语法可以轻松定义出 RESTful 风格的 url，也可以用于声明 HTTP GET/POST 参数。也可以用于用户认证拦截。自动识别返回类型 HttpResponse, JSON, google-protobuf
 
 ##2. 安装
 使用 pip:
 
-	pip install git+https://github.com/wangtai/django_render.git 
-	
 	pip install django-render-url 
 
 ##3. 用法
@@ -54,6 +52,33 @@ def link(request):
 	...
 	return True
 ```		
+
+在views 是一个package 的情况下，可以使用url自动扫描:
+
+```python
+    from django_render.url_patterns_maker import urlpatterns_maker
+    urlpatterns = urlpatterns_maker()
+```
+上面的代码放到views/\_\_init\_\_.py 中, 就可以自动将views/下面其他的python file name 作为url 的一级目录。如果有特殊名字映射需求可以如下写法：
+
+```python
+    from django_render.url_patterns_maker import urlpatterns_maker
+    urlpatterns = urlpatterns_maker(default='^', profile='^my/')
+```
+
+等同于如下写法：
+```python
+    urlpatterns = patterns('',
+                           url(ur'^', include('chooper_api.views.default')),
+                           url(ur'^my/', include('chooper_api.views.profile')),
+                           url(ur'^friend/', include('chooper_api.views.friend')),
+                           url(ur'^feed/', include('chooper_api.views.feed')),
+    )
+
+```
+
+note that unspecified views(friend.py and feed.py here) got their file name(without extension,
+and surrounded by '^' and '/') as the url regex
 		
 定义 GET|POST /index:
 
@@ -185,7 +210,13 @@ Type.int_list, Type.str_list, Type.json
 @get(ids=Type.int_list, names=Type.str_list, extrs=Type.json)
 ```
 	
-其中 Type.int_list 和 Type.str_list, Value应构造成 ids=1,2,3 和 name=Bob,Johns,Peter
+其中 Type.int_list 和 Type.str_list, Value应构造成 ids=1,2,3 和 name=Bob,Johns,Peter, 或者 id=1&id=2&id=3 也可以
+
+上传文件file type
+
+```python 
+@post(image=Type.file)
+```
 
 ###3.3. 返回类型
 
@@ -201,6 +232,10 @@ return True
 ...
 return False
 # {'rt':false, 'message':''}
+
+...
+return False, ErrorCode.code1 # requires enum34 # from enum.enum import Enum; class ErrorCode(Enum): pass
+# {'rt':false, 'message':1}
 
 ...
 return True, {'data': ...}
@@ -231,7 +266,7 @@ return 'message content'
 
 ```python
 # /hello?access_secret_key=The_Key_Only_You_Know
-@login_required(access_secret_key='The_Key_Only_You_Know', login_page='/login.html')
+@login_required(access_secret_key='The_Key_Only_You_Know', login_page='/login.html', check_auth=check_auth)
 ```
 	
 全局定义参数:
@@ -313,4 +348,3 @@ django_render.global_read_user_interceptor = read_user_interceptor
 
 1. 自动识别google-protobuf
 2. 支持 Form, Ajax 使用 PUT/DELETE/...
-3. Type.int_list, Type.str_list 识别 id=1&id=2&id=3

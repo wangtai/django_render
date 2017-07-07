@@ -24,6 +24,7 @@ __all__ = (
 
 import functools
 
+
 Type = _Type
 RequestMethod = _RequestMethod
 M = _RequestMethod

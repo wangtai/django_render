@@ -9,7 +9,7 @@ Django Render
 6. [联系](#6-联系)
 7. [待续](#7-待续)
 
-##0. 开始
+## 0. 开始
 
 一个非常轻量的 Django URL 装饰器
 
@@ -22,18 +22,18 @@ def index(request, text):
 	return {'hello': text}
 ```
 
-##1. 简介
+## 1. 简介
 
 基于Python 2.7 重新定义 Django url 的用法，使用@语法可以轻松定义出 RESTful 风格的 url，也可以用于声明 HTTP GET/POST 参数。也可以用于用户认证拦截。自动识别返回类型 HttpResponse, JSON, google-protobuf
 
-##2. 安装
+## 2. 安装
 使用 pip:
 
 	pip install django-render-url 
 
-##3. 用法
+## 3. 用法
 
-###3.1. 定义url
+### 3.1. 定义url
 在urls.py中的定义:
 
 ```python
@@ -132,7 +132,7 @@ def change_a_blog_text(request, id, text):
 	...
 ```
 		
-###3.2. 声明HTTP参数
+### 3.2. 声明HTTP参数
 
 GET/POST 参数:
 
@@ -218,7 +218,7 @@ Type.int_list, Type.str_list, Type.json
 @post(image=Type.file)
 ```
 
-###3.3. 返回类型
+### 3.3. 返回类型
 
 如果 return HttpResponse 或其子类，则直接返回到客户端
 
@@ -262,7 +262,7 @@ return 'message content'
 # {'message':'message content'}
 ```
 	
-###3.4. 用户认证
+### 3.4. 用户认证
 
 ```python
 # /hello?access_secret_key=The_Key_Only_You_Know
@@ -330,21 +330,21 @@ django_render.global_read_user_interceptor = read_user_interceptor
 #如果登录失败，不会跳转到 login page, 而是返回 {'rt':false, 'message':'login first'}
 ```
 
-##4. 注意
+## 4. 注意
 
 > @url() 并不是真正 django 的 url 方法，但因为是在基础上的封装，所以 django url 的其他用法 @url() 也同样支持
 
-##5. 交流
+## 5. 交流
 
 * mail list: django-render@googlegroups.com
 * qq group id: 7790075
 
-##6. 联系
+## 6. 联系
 
 * email: i@wangtai.me
 * twitter: wang_tai
 
-##7. 待续
+## 7. 待续
 
 1. 自动识别google-protobuf
 2. 支持 Form, Ajax 使用 PUT/DELETE/...
